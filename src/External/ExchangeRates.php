@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ExchangeRates
+class ExchangeRates implements CurrencyRatesProviderInterface
 {
     private const URL = 'https://api.apilayer.com/exchangerates_data/latest';
     private const KEY = 'uoQVKMVWsKrjIrj5HEwHjZV6UR7nAXD4'; // Needs to be in .env file
