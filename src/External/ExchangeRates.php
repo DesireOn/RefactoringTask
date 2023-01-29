@@ -2,7 +2,7 @@
 
 namespace App\External;
 
-use App\Exception\ExchangeRatesException;
+use App\Exception\CurrencyRatesProviderException;
 use App\Model\Transaction;
 use App\Service\CurrencyChecker;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -28,7 +28,7 @@ class ExchangeRates implements CurrencyRatesProviderInterface
      * @return float
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
-     * @throws ExchangeRatesException
+     * @throws CurrencyRatesProviderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
@@ -40,7 +40,7 @@ class ExchangeRates implements CurrencyRatesProviderInterface
 
         $content = $this->getResults();
         if ($content['success'] === false) {
-            throw new ExchangeRatesException('Success status from Exchange Rates API is false.');
+            throw new CurrencyRatesProviderException('Success status from Exchange Rates API is false.');
         }
 
         $rate = 0.00;
@@ -63,7 +63,7 @@ class ExchangeRates implements CurrencyRatesProviderInterface
      * @return mixed[]
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
-     * @throws ExchangeRatesException
+     * @throws CurrencyRatesProviderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
@@ -78,7 +78,7 @@ class ExchangeRates implements CurrencyRatesProviderInterface
 
         $responseStatusCode = $response->getStatusCode();
         if ($responseStatusCode !== 200) {
-            throw new ExchangeRatesException('The Exchange Rates API gives status code: '.$responseStatusCode);
+            throw new CurrencyRatesProviderException('The Exchange Rates API gives status code: '.$responseStatusCode);
         }
 
         return $response->toArray();

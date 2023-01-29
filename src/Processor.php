@@ -4,7 +4,7 @@ namespace App;
 
 use App\Exception\BinProviderException;
 use App\Exception\CommandException;
-use App\Exception\ExchangeRatesException;
+use App\Exception\CurrencyRatesProviderException;
 use App\Exception\TransactionGeneratorException;
 use App\External\BinProviderInterface;
 use App\External\ExchangeRates;
@@ -108,7 +108,7 @@ class Processor
         $amountFixed = null;
         try {
             $amountFixed = $this->exchangeRates->getAmountFixed($transaction);
-        } catch (ExchangeRatesException $e) {
+        } catch (CurrencyRatesProviderException $e) {
             echo sprintf(
                 "An error occurred during processing amount: %s\n",
                 $e->getMessage()

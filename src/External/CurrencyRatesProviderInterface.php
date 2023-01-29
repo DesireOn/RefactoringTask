@@ -2,7 +2,7 @@
 
 namespace App\External;
 
-use App\Exception\ExchangeRatesException;
+use App\Exception\CurrencyRatesProviderException;
 use App\Model\Transaction;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -18,7 +18,7 @@ interface CurrencyRatesProviderInterface
      * @return float
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
-     * @throws ExchangeRatesException
+     * @throws CurrencyRatesProviderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface

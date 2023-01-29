@@ -2,7 +2,7 @@
 
 namespace External;
 
-use App\Exception\ExchangeRatesException;
+use App\Exception\CurrencyRatesProviderException;
 use App\External\CurrencyRatesProviderInterface;
 use App\Factory\CurrencyRatesProviderFactory;
 use App\Model\Transaction;
@@ -31,7 +31,7 @@ class ExchangeRatesTest extends TestCase
 
     /**
      * @return void
-     * @throws ExchangeRatesException
+     * @throws CurrencyRatesProviderException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
@@ -50,7 +50,7 @@ class ExchangeRatesTest extends TestCase
 
         $transaction = new Transaction('516793', 50.00, 'USD');
 
-        self::expectException(ExchangeRatesException::class);
+        self::expectException(CurrencyRatesProviderException::class);
         self::expectExceptionMessage('The Exchange Rates API gives status code: 500');
         $this->currencyRatesProvider->getAmountFixed($transaction);
     }
@@ -59,7 +59,7 @@ class ExchangeRatesTest extends TestCase
      * @return void
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
-     * @throws ExchangeRatesException
+     * @throws CurrencyRatesProviderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
@@ -93,7 +93,7 @@ class ExchangeRatesTest extends TestCase
 
         $transaction = new Transaction('516793', 50.00, 'USD');
 
-        self::expectException(ExchangeRatesException::class);
+        self::expectException(CurrencyRatesProviderException::class);
         self::expectExceptionMessage('Success status from Exchange Rates API is false.');
         $this->currencyRatesProvider->getAmountFixed($transaction);
     }
@@ -102,7 +102,7 @@ class ExchangeRatesTest extends TestCase
      * @return void
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
-     * @throws ExchangeRatesException
+     * @throws CurrencyRatesProviderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
@@ -144,7 +144,7 @@ class ExchangeRatesTest extends TestCase
      * @return void
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
-     * @throws ExchangeRatesException
+     * @throws CurrencyRatesProviderException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
