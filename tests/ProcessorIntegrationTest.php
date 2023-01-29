@@ -1,6 +1,8 @@
 <?php
 
 use App\Exception\CommandException;
+use App\External\BinProviderInterface;
+use App\Factory\BinProviderFactory;
 use App\Processor;
 use DI\Container;
 use DI\DependencyException;
@@ -60,11 +62,18 @@ class ProcessorIntegrationTest extends TestCase
      * @return Processor
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws Exception
      */
     private function createProcessor(): Processor
     {
         $container = new Container();
         $container->set(HttpClientInterface::class, HttpClient::create());
+        $container->set(
+            BinProviderInterface::class,
+            BinProviderFactory::createBinProvider(
+                BinProviderInterface::BINLIST, $container->get(HttpClientInterface::class)
+            )
+        );
         return $container->get('App\Processor');
     }
 }
