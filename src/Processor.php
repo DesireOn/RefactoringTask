@@ -7,6 +7,7 @@ use App\Exception\CommandException;
 use App\Exception\CurrencyRatesProviderException;
 use App\Exception\TransactionGeneratorException;
 use App\External\BinProviderInterface;
+use App\External\CurrencyRatesProviderInterface;
 use App\External\ExchangeRates;
 use App\Model\Transaction;
 use App\Service\CurrencyCalculator;
@@ -21,19 +22,19 @@ class Processor
 {
     private TransactionGenerator $transactionGenerator;
     private BinProviderInterface $binProvider;
-    private ExchangeRates $exchangeRates;
+    private CurrencyRatesProviderInterface $currencyRatesProvider;
     private CurrencyCalculator $calculator;
 
     public function __construct(
         TransactionGenerator $transactionGenerator,
         BinProviderInterface $binProvider,
-        ExchangeRates $exchangeRates,
+        CurrencyRatesProviderInterface $currencyRatesProvider,
         CurrencyCalculator $calculator
     )
     {
         $this->transactionGenerator = $transactionGenerator;
         $this->binProvider = $binProvider;
-        $this->exchangeRates = $exchangeRates;
+        $this->currencyRatesProvider = $currencyRatesProvider;
         $this->calculator = $calculator;
     }
 
@@ -103,11 +104,15 @@ class Processor
         return $transaction;
     }
 
+    /**
+     * @param Transaction $transaction
+     * @return float|null
+     */
     private function processAmountFixed(Transaction $transaction): ?float
     {
         $amountFixed = null;
         try {
-            $amountFixed = $this->exchangeRates->getAmountFixed($transaction);
+            $amountFixed = $this->currencyRatesProvider->getAmountFixed($transaction);
         } catch (CurrencyRatesProviderException $e) {
             echo sprintf(
                 "An error occurred during processing amount: %s\n",
