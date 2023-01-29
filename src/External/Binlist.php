@@ -2,7 +2,7 @@
 
 namespace App\External;
 
-use App\Exception\BinlistException;
+use App\Exception\BinProviderException;
 use App\Model\Transaction;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -24,7 +24,7 @@ class Binlist implements BinProviderInterface
     /**
      * @param Transaction $transaction
      * @return string
-     * @throws BinlistException
+     * @throws BinProviderException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
@@ -40,7 +40,7 @@ class Binlist implements BinProviderInterface
 
         $responseStatusCode = $response->getStatusCode();
         if ($responseStatusCode !== 200) {
-            throw new BinlistException('The Binlist API gives status code: '.$responseStatusCode);
+            throw new BinProviderException('The Binlist API gives status code: '.$responseStatusCode);
         }
 
         $binResults = $response->toArray();
@@ -48,7 +48,7 @@ class Binlist implements BinProviderInterface
             return $binResults['country']['alpha2'];
         }
 
-        throw new BinlistException(
+        throw new BinProviderException(
             'The country code has not been retrieved successfully from from Binlist API.'
         );
     }

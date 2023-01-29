@@ -2,7 +2,7 @@
 
 namespace App\External;
 
-use App\Exception\BinlistException;
+use App\Exception\BinProviderException;
 use App\Model\Transaction;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -17,7 +17,7 @@ interface BinProviderInterface
     /**
      * @param Transaction $transaction
      * @return string
-     * @throws BinlistException
+     * @throws BinProviderException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface

@@ -4,7 +4,7 @@ namespace App\Exception;
 
 use Exception;
 
-class BinlistException extends Exception
+class BinProviderException extends Exception
 {
 
 }

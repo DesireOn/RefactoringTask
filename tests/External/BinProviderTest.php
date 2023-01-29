@@ -2,8 +2,7 @@
 
 namespace External;
 
-use App\Exception\BinlistException;
-use App\External\Binlist;
+use App\Exception\BinProviderException;
 use App\External\BinProviderInterface;
 use App\Factory\BinProviderFactory;
 use App\Model\Transaction;
@@ -38,7 +37,7 @@ class BinProviderTest extends TestCase
 
     /**
      * @return void
-     * @throws BinlistException
+     * @throws BinProviderException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
@@ -58,14 +57,14 @@ class BinProviderTest extends TestCase
 
         $transaction = new Transaction('516793', 50.00, 'USD');
 
-        self::expectException(BinlistException::class);
+        self::expectException(BinProviderException::class);
         self::expectExceptionMessage('The Binlist API gives status code: 500');
         $this->binProvider->getCountry($transaction);
     }
 
     /**
      * @return void
-     * @throws BinlistException
+     * @throws BinProviderException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
@@ -87,14 +86,14 @@ class BinProviderTest extends TestCase
 
         $transaction = new Transaction('516793', 50.00, 'USD');
 
-        self::expectException(BinlistException::class);
+        self::expectException(BinProviderException::class);
         self::expectExceptionMessage('The country code has not been retrieved successfully from from Binlist API.');
         $this->binProvider->getCountry($transaction);
     }
 
     /**
      * @return void
-     * @throws BinlistException
+     * @throws BinProviderException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface

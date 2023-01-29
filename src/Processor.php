@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Exception\BinlistException;
+use App\Exception\BinProviderException;
 use App\Exception\CommandException;
 use App\Exception\ExchangeRatesException;
 use App\Exception\TransactionGeneratorException;
@@ -135,7 +135,7 @@ class Processor
         $country = null;
         try {
             $country = $this->binProvider->getCountry($transaction);
-        } catch (BinlistException $e) {
+        } catch (BinProviderException $e) {
             echo sprintf(
                 "An error occurred during processing country: %s\n",
                 $e->getMessage()
