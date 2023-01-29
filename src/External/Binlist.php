@@ -11,7 +11,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class Binlist
+class Binlist implements BinProviderInterface
 {
     private const URL = 'https://lookup.binlist.net/';
     private HttpClientInterface $httpClient;
