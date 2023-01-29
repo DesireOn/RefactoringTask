@@ -4,7 +4,10 @@ namespace External;
 
 use App\Exception\BinlistException;
 use App\External\Binlist;
+use App\External\BinProviderInterface;
+use App\Factory\BinProviderFactory;
 use App\Model\Transaction;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -25,6 +28,7 @@ class BinlistTest extends TestCase
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws Exception
      */
     public function testThrowingExceptionWhenApiDoesNotReturnStatusCode200(): void
     {
@@ -39,12 +43,12 @@ class BinlistTest extends TestCase
             ->method('request')
             ->willReturn($mockResponse);
 
-        $binlist = new Binlist($mockHttpClient);
+        $binProvider = BinProviderFactory::createBinProvider(BinProviderInterface::BINLIST, $mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'USD');
 
         self::expectException(BinlistException::class);
         self::expectExceptionMessage('The Binlist API gives status code: 500');
-        $binlist->getCountry($transaction);
+        $binProvider->getCountry($transaction);
     }
 
     /**
