@@ -6,7 +6,7 @@ use App\Exception\BinlistException;
 use App\Exception\CommandException;
 use App\Exception\ExchangeRatesException;
 use App\Exception\TransactionGeneratorException;
-use App\External\Binlist;
+use App\External\BinProviderInterface;
 use App\External\ExchangeRates;
 use App\Model\Transaction;
 use App\Service\CurrencyCalculator;
@@ -20,19 +20,19 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class Processor
 {
     private TransactionGenerator $transactionGenerator;
-    private Binlist $binlist;
+    private BinProviderInterface $binProvider;
     private ExchangeRates $exchangeRates;
     private CurrencyCalculator $calculator;
 
     public function __construct(
         TransactionGenerator $transactionGenerator,
-        Binlist $binlist,
+        BinProviderInterface $binProvider,
         ExchangeRates $exchangeRates,
         CurrencyCalculator $calculator
     )
     {
         $this->transactionGenerator = $transactionGenerator;
-        $this->binlist = $binlist;
+        $this->binProvider = $binProvider;
         $this->exchangeRates = $exchangeRates;
         $this->calculator = $calculator;
     }
@@ -134,7 +134,7 @@ class Processor
     {
         $country = null;
         try {
-            $country = $this->binlist->getCountry($transaction);
+            $country = $this->binProvider->getCountry($transaction);
         } catch (BinlistException $e) {
             echo sprintf(
                 "An error occurred during processing country: %s\n",
