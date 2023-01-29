@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class BinlistTest extends TestCase
+class BinProviderTest extends TestCase
 {
     private HttpClientInterface $mockHttpClient;
     private ResponseInterface $mockResponse;
