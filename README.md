@@ -4,6 +4,7 @@
 - Install composer libraries: `composer install`.
 - Run the tests: `./vendor/bin/phpunit tests --testdox`.
 - Run phpstan: `vendor/bin/phpstan analyse src --level=8` (Code covers levels 0-8).
+- Run the command: `php app.php input.txt`
 
 # Situation
 
