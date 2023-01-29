@@ -2,7 +2,9 @@
 
 use App\Exception\CommandException;
 use App\External\BinProviderInterface;
+use App\External\CurrencyRatesProviderInterface;
 use App\Factory\BinProviderFactory;
+use App\Factory\CurrencyRatesProviderFactory;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
@@ -18,6 +20,13 @@ try {
         BinProviderInterface::class,
         BinProviderFactory::createBinProvider(
             BinProviderInterface::BINLIST, $container->get(HttpClientInterface::class)
+        )
+    );
+    $container->set(
+        CurrencyRatesProviderInterface::class,
+        CurrencyRatesProviderFactory::createCurrencyRatesProvider(
+            CurrencyRatesProviderInterface::EXCHANGE_RATES,
+            $container->get(HttpClientInterface::class)
         )
     );
 } catch (DependencyException|NotFoundException $e) {
