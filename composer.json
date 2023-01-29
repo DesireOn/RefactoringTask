@@ -1,0 +1,25 @@
+{
+  "name": "desireon/interview-task",
+  "license": "proprietary",
+  "type": "project",
+  "require": {
+    "php": ">=7.4",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "php-di/php-di": "^6.4",
+    "symfony/http-client": "^5.4"
+  },
+  "config": {
+    "platform": {},
+    "sort-packages": true
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^1.9",
+    "phpunit/phpunit": "^9"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src"
+    }
+  }
+}
