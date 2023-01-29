@@ -2,7 +2,9 @@
 
 use App\Exception\CommandException;
 use App\External\BinProviderInterface;
+use App\External\CurrencyRatesProviderInterface;
 use App\Factory\BinProviderFactory;
+use App\Factory\CurrencyRatesProviderFactory;
 use App\Processor;
 use DI\Container;
 use DI\DependencyException;
@@ -71,7 +73,15 @@ class ProcessorIntegrationTest extends TestCase
         $container->set(
             BinProviderInterface::class,
             BinProviderFactory::createBinProvider(
-                BinProviderInterface::BINLIST, $container->get(HttpClientInterface::class)
+                BinProviderInterface::BINLIST,
+                $container->get(HttpClientInterface::class)
+            )
+        );
+        $container->set(
+            CurrencyRatesProviderInterface::class,
+            CurrencyRatesProviderFactory::createCurrencyRatesProvider(
+                CurrencyRatesProviderInterface::EXCHANGE_RATES,
+                $container->get(HttpClientInterface::class)
             )
         );
         return $container->get('App\Processor');
