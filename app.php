@@ -1,6 +1,8 @@
 <?php
 
 use App\Exception\CommandException;
+use App\External\BinProviderInterface;
+use App\Factory\BinProviderFactory;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
@@ -11,6 +13,17 @@ require __DIR__.'/vendor/autoload.php';
 
 $container = new Container();
 $container->set(HttpClientInterface::class, HttpClient::create());
+try {
+    $container->set(
+        BinProviderInterface::class,
+        BinProviderFactory::createBinProvider(
+            BinProviderInterface::BINLIST, $container->get(HttpClientInterface::class)
+        )
+    );
+} catch (DependencyException|NotFoundException $e) {
+    echo "Error occurred during instantiating Binlist class: ".$e->getMessage();
+} catch (Exception $e) {
+}
 
 try {
     $processor = $container->get('App\Processor');
