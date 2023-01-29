@@ -3,7 +3,8 @@
 namespace External;
 
 use App\Exception\ExchangeRatesException;
-use App\External\ExchangeRates;
+use App\External\CurrencyRatesProviderInterface;
+use App\Factory\CurrencyRatesProviderFactory;
 use App\Model\Transaction;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -16,6 +17,18 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class ExchangeRatesTest extends TestCase
 {
+    private HttpClientInterface $mockHttpClient;
+    private ResponseInterface $mockResponse;
+    private CurrencyRatesProviderInterface $currencyRatesProvider;
+    protected function setUp(): void
+    {
+        $this->mockHttpClient = $this->createMock(HttpClientInterface::class);
+        $this->mockResponse = $this->createMock(ResponseInterface::class);
+        $this->currencyRatesProvider = CurrencyRatesProviderFactory::createCurrencyRatesProvider(
+            CurrencyRatesProviderInterface::EXCHANGE_RATES, $this->mockHttpClient
+        );
+    }
+
     /**
      * @return void
      * @throws ExchangeRatesException
@@ -27,23 +40,19 @@ class ExchangeRatesTest extends TestCase
      */
     public function testThrowingExceptionWhenApiDoesNotReturnStatusCode200(): void
     {
-        $mockHttpClient = $this->createMock(HttpClientInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-
-        $mockResponse
+        $this->mockResponse
             ->method('getStatusCode')
             ->willReturn(500);
 
-        $mockHttpClient
+        $this->mockHttpClient
             ->method('request')
-            ->willReturn($mockResponse);
+            ->willReturn($this->mockResponse);
 
-        $exchangeRates = new ExchangeRates($mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'USD');
 
         self::expectException(ExchangeRatesException::class);
         self::expectExceptionMessage('The Exchange Rates API gives status code: 500');
-        $exchangeRates->getAmountFixed($transaction);
+        $this->currencyRatesProvider->getAmountFixed($transaction);
     }
 
     /**
@@ -57,13 +66,10 @@ class ExchangeRatesTest extends TestCase
      */
     public function testThrowingExceptionWhenStatusIsNotSuccess(): void
     {
-        $mockHttpClient = $this->createMock(HttpClientInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-
-        $mockResponse
+        $this->mockResponse
             ->method('getStatusCode')
             ->willReturn(200);
-        $mockResponse
+        $this->mockResponse
             ->method('toArray')
             ->willReturn([
                 "success" => false,
@@ -81,16 +87,15 @@ class ExchangeRatesTest extends TestCase
                 ]
             ]);
 
-        $mockHttpClient
+        $this->mockHttpClient
             ->method('request')
-            ->willReturn($mockResponse);
+            ->willReturn($this->mockResponse);
 
-        $exchangeRates = new ExchangeRates($mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'USD');
 
         self::expectException(ExchangeRatesException::class);
         self::expectExceptionMessage('Success status from Exchange Rates API is false.');
-        $exchangeRates->getAmountFixed($transaction);
+        $this->currencyRatesProvider->getAmountFixed($transaction);
     }
 
     /**
@@ -104,13 +109,10 @@ class ExchangeRatesTest extends TestCase
      */
     public function testGetAmountFixedWhenThereIsRate(): void
     {
-        $mockHttpClient = $this->createMock(HttpClientInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-
-        $mockResponse
+        $this->mockResponse
             ->method('getStatusCode')
             ->willReturn(200);
-        $mockResponse
+        $this->mockResponse
             ->method('toArray')
             ->willReturn([
                 "success" => true,
@@ -128,14 +130,13 @@ class ExchangeRatesTest extends TestCase
                 ]
             ]);
 
-        $mockHttpClient
+        $this->mockHttpClient
             ->method('request')
-            ->willReturn($mockResponse);
+            ->willReturn($this->mockResponse);
 
-        $exchangeRates = new ExchangeRates($mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'USD');
 
-        $amount = $exchangeRates->getAmountFixed($transaction);
+        $amount = $this->currencyRatesProvider->getAmountFixed($transaction);
         self::assertSame( 40.52, $amount);
     }
 
@@ -150,13 +151,10 @@ class ExchangeRatesTest extends TestCase
      */
     public function testGetAmountFixedWhenThereIsNoRate(): void
     {
-        $mockHttpClient = $this->createMock(HttpClientInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-
-        $mockResponse
+        $this->mockResponse
             ->method('getStatusCode')
             ->willReturn(200);
-        $mockResponse
+        $this->mockResponse
             ->method('toArray')
             ->willReturn([
                 "success" => true,
@@ -174,14 +172,13 @@ class ExchangeRatesTest extends TestCase
                 ]
             ]);
 
-        $mockHttpClient
+        $this->mockHttpClient
             ->method('request')
-            ->willReturn($mockResponse);
+            ->willReturn($this->mockResponse);
 
-        $exchangeRates = new ExchangeRates($mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'BG');
 
-        $amount = $exchangeRates->getAmountFixed($transaction);
+        $amount = $this->currencyRatesProvider->getAmountFixed($transaction);
         self::assertSame( 50.0, $amount);
     }
 }
