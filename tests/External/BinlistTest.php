@@ -19,6 +19,22 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class BinlistTest extends TestCase
 {
+    private HttpClientInterface $mockHttpClient;
+    private ResponseInterface $mockResponse;
+    private BinProviderInterface $binProvider;
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        $this->mockHttpClient = $this->createMock(HttpClientInterface::class);
+        $this->mockResponse = $this->createMock(ResponseInterface::class);
+        $this->binProvider = BinProviderFactory::createBinProvider(
+            BinProviderInterface::BINLIST, $this->mockHttpClient
+        );
+    }
 
     /**
      * @return void
@@ -32,23 +48,19 @@ class BinlistTest extends TestCase
      */
     public function testThrowingExceptionWhenApiDoesNotReturnStatusCode200(): void
     {
-        $mockHttpClient = $this->createMock(HttpClientInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-
-        $mockResponse
+        $this->mockResponse
             ->method('getStatusCode')
             ->willReturn(500);
 
-        $mockHttpClient
+        $this->mockHttpClient
             ->method('request')
-            ->willReturn($mockResponse);
+            ->willReturn($this->mockResponse);
 
-        $binProvider = BinProviderFactory::createBinProvider(BinProviderInterface::BINLIST, $mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'USD');
 
         self::expectException(BinlistException::class);
         self::expectExceptionMessage('The Binlist API gives status code: 500');
-        $binProvider->getCountry($transaction);
+        $this->binProvider->getCountry($transaction);
     }
 
     /**
@@ -62,26 +74,22 @@ class BinlistTest extends TestCase
      */
     public function testThrowingExceptionWhenResponseDoesNotContainCountryCode(): void
     {
-        $mockHttpClient = $this->createMock(HttpClientInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-
-        $mockResponse
+        $this->mockResponse
             ->method('getStatusCode')
             ->willReturn(200);
-        $mockResponse
+        $this->mockResponse
             ->method('toArray')
             ->willReturn([]);
 
-        $mockHttpClient
+        $this->mockHttpClient
             ->method('request')
-            ->willReturn($mockResponse);
+            ->willReturn($this->mockResponse);
 
-        $binlist = new Binlist($mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'USD');
 
         self::expectException(BinlistException::class);
         self::expectExceptionMessage('The country code has not been retrieved successfully from from Binlist API.');
-        $binlist->getCountry($transaction);
+        $this->binProvider->getCountry($transaction);
     }
 
     /**
@@ -95,13 +103,10 @@ class BinlistTest extends TestCase
      */
     public function testGetCountryReturnsCountryCodeFromApi(): void
     {
-        $mockHttpClient = $this->createMock(HttpClientInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-
-        $mockResponse
+        $this->mockResponse
             ->method('getStatusCode')
             ->willReturn(200);
-        $mockResponse
+        $this->mockResponse
             ->method('toArray')
             ->willReturn([
                 "number" => [
@@ -122,14 +127,13 @@ class BinlistTest extends TestCase
                 ]
             ]);
 
-        $mockHttpClient
+        $this->mockHttpClient
             ->method('request')
-            ->willReturn($mockResponse);
+            ->willReturn($this->mockResponse);
 
-        $binlist = new Binlist($mockHttpClient);
         $transaction = new Transaction('516793', 50.00, 'USD');
 
-        $country = $binlist->getCountry($transaction);
+        $country = $this->binProvider->getCountry($transaction);
         self::assertSame( 'LT', $country);
     }
 }
